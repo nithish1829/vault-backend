@@ -20,7 +20,7 @@ public class CorsConfig
 
                 "http://localhost:5173",
 
-                "https://your-frontend.vercel.app"
+                "https://vault-frontend-three.vercel.app"
             )
 
             // 🔥 ALLOW METHODS
