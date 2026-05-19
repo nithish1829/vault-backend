@@ -35,19 +35,12 @@ public class JwtFilter
 
         // 🔓 Skip login/register APIs
         if (
-
-        	    path.startsWith("/auth")
-
-        	    ||
-
-        	    path.startsWith("/uploads")
-
+        	    path.startsWith("/auth") ||
+        	    path.startsWith("/uploads") ||
+        	    path.equals("/")
         	) {
 
-        	    filterChain.doFilter(
-        	        request,
-        	        response
-        	    );
+        	    filterChain.doFilter(request, response);
 
         	    return;
         	}

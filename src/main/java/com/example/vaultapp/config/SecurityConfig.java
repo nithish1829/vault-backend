@@ -4,65 +4,64 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import org.springframework.security.config.Customizer;
-
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-
 import org.springframework.security.config.http.SessionCreationPolicy;
 
 import org.springframework.security.web.SecurityFilterChain;
-
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 public class SecurityConfig {
 
-    private final JwtFilter jwtFilter;
+    @Bean
+    public JwtFilter jwtFilter() {
 
-    public SecurityConfig(
-        JwtFilter jwtFilter
-    ) {
-
-        this.jwtFilter = jwtFilter;
+        return new JwtFilter();
     }
 
     @Bean
     public SecurityFilterChain filterChain(
-        HttpSecurity http
+            HttpSecurity http
     ) throws Exception {
 
         http
 
+            // 🔥 DISABLE CSRF
             .csrf(csrf -> csrf.disable())
 
+            // 🔥 ENABLE CORS
             .cors(Customizer.withDefaults())
 
+            // 🔥 STATELESS JWT
             .sessionManagement(session ->
-
                 session.sessionCreationPolicy(
                     SessionCreationPolicy.STATELESS
                 )
             )
 
+            // 🔥 API RULES
             .authorizeHttpRequests(auth -> auth
 
+                // 🔓 PUBLIC APIs
                 .requestMatchers(
+                    "/",
                     "/auth/**",
                     "/uploads/**"
                 ).permitAll()
 
+                // 🔒 PROTECTED APIs
                 .requestMatchers(
-                    "/calc/**",
-                    "/files/**"
+                    "/files/**",
+                    "/calc/**"
                 ).authenticated()
 
-                .anyRequest()
-                .authenticated()
+                // 🔥 EVERYTHING ELSE
+                .anyRequest().permitAll()
             )
 
+            // 🔥 JWT FILTER
             .addFilterBefore(
-
-                jwtFilter,
-
+                jwtFilter(),
                 UsernamePasswordAuthenticationFilter.class
             );
 
