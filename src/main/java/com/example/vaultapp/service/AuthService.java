@@ -2,6 +2,7 @@ package com.example.vaultapp.service;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -17,11 +18,32 @@ public class AuthService {
 	 @Autowired
 	    private UserRepository repo;
 
-	    public User register(User user) {
-	        user.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
-	        user.setPin(new BCryptPasswordEncoder().encode(user.getPin()));
-	        return repo.save(user);
-	    }
+	 public User register(User user) {
+
+		    Optional<User> existingUser =
+		            repo.findByUsername(user.getUsername());
+
+		    if (existingUser.isPresent()) {
+
+		        throw new RuntimeException(
+		                "Username already exists"
+		        );
+
+		    }
+
+		    user.setPassword(
+		            new BCryptPasswordEncoder()
+		                    .encode(user.getPassword())
+		    );
+
+		    user.setPin(
+		            new BCryptPasswordEncoder()
+		                    .encode(user.getPin())
+		    );
+
+		    return repo.save(user);
+
+		}
 
 	    public Map<String, Object> login(String username, String password) {
 	        User user = repo.findByUsername(username).orElseThrow();

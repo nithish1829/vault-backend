@@ -3,6 +3,7 @@ package com.example.vaultapp.controller;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,8 +20,29 @@ public class AuthController {
 	private AuthService service;
 
 	@PostMapping("/register")
-	public User register(@RequestBody User user) {
-		return service.register(user);
+	public ResponseEntity<?> register(
+	        @RequestBody User user
+	) {
+
+	    try {
+
+	        return ResponseEntity.ok(
+	        		service.register(user)
+	        );
+
+	    } catch (Exception e) {
+
+	        return ResponseEntity
+	                .badRequest()
+	                .body(
+	                        Map.of(
+	                                "message",
+	                                e.getMessage()
+	                        )
+	                );
+
+	    }
+
 	}
 
 	@PostMapping("/login")
